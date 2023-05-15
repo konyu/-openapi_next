@@ -1,0 +1,1 @@
+cp ../openapi_rails/doc/openapi.yaml docs
