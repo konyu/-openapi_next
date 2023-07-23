@@ -1,0 +1,30 @@
+name: "Regenarate schema.graphql and Build"
+inputs:
+  github-token:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: npm
+    - run: npm ci
+      shell: bash
+    - name: Copy codegen.ts
+      run: ./scripts/dl_schema.sh
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+    # docs/openapi.yamlファイルの中にあるdeprecated: trueがある親要素を削除する
+    - name: yq - portable yaml processor
+      uses: mikefarah/yq@v4.34.2
+      with:
+        cmd: yq eval 'del(.. | select(has("deprecated") and .deprecated == true))' docs/openapi.yaml -i
+      if: env.DEPRECATED_REMOVER
+    - name: Generate code
+      run: npm run generate-api
+      shell: bash
+    - name: Build
+      run: npm run build
+      shell: bash

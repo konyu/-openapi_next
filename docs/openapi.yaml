@@ -6,7 +6,6 @@ servers:
   - url: http://localhost:3000
 tags:
   - name: post
-    description: Access to Users
 paths:
   /posts:
     get:

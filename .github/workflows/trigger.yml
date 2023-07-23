@@ -1,0 +1,17 @@
+name: Trigger
+on: [workflow_dispatch]
+
+jobs:
+  server-side-change:
+    name: Server side change trigger
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Regenarate schema.graphql and Build
+        uses: ./.github/actions/pre_test
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run test
+        run: npm run test
